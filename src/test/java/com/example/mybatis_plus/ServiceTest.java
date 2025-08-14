@@ -1,6 +1,7 @@
 package com.example.mybatis_plus;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -33,5 +34,11 @@ public class ServiceTest {
 
         boolean result = userSerivce.saveBatch(users);
         System.out.println("插入是否成功: " + result);
+    }
+
+    @Test
+    void testListAllByName() {
+        List<User> users = userSerivce.listAllByName("Tom");
+        users.forEach(System.out::println);
     }
 }
