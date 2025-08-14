@@ -56,4 +56,10 @@ public class MapperTest {
         int result = userMapper.deleteById(1);
         System.out.println(result);
     }
+
+    @Test
+    void testSelectAllByName() {
+        List<User> users = userMapper.selectAllByName("Jack");
+        users.forEach(System.out::println);
+    }
 }
