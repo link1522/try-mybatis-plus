@@ -45,7 +45,6 @@ public class MapperTest {
     @Test
     void testUpdate() {
         User user = new User();
-        user.setId(1L);
         user.setAge(36);
         int result = userMapper.updateById(user);
         System.out.println(result);
