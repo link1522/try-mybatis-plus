@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 
 // import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -26,4 +27,9 @@ public class User {
     private LocalDateTime createTime;
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
+
+    // 邏輯刪除 (軟刪除)
+    @TableLogic
+    @TableField(value = "is_deleted")
+    private Boolean deleted;
 }

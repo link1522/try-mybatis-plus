@@ -52,7 +52,7 @@ public class MapperTest {
 
     @Test
     void testDelete() {
-        int result = userMapper.deleteById(1);
+        int result = userMapper.deleteById(1956882740187369473L);
         System.out.println(result);
     }
 
