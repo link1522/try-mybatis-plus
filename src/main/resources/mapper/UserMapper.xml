@@ -8,4 +8,9 @@
         select <include refid="Base_Column_List" />
         from user where name = #{name}
     </select>
+
+    <select id="selectPageByAge" resultType="com.example.mybatis_plus.entity.User">
+        select <include refid="Base_Column_List" />
+        from user where age > #{age}
+    </select>
 </mapper>

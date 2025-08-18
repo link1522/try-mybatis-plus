@@ -30,4 +30,12 @@ public class InterceptorTest {
         boolean hasPrev = page.hasPrevious();
         System.out.println("有上一頁? " + hasPrev);
     }
+
+    @Test
+    void testSelectPageByPage() {
+        Page<User> page = new Page<>(2, 5);
+        userMapper.selectPageByAge(page, 20);
+        List<User> users = page.getRecords();
+        users.forEach(System.out::println);
+    }
 }
