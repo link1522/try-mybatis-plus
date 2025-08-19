@@ -9,13 +9,17 @@ import javax.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.example.mybatis_plus.entity.Product;
 import com.example.mybatis_plus.entity.User;
+import com.example.mybatis_plus.mapper.ProductMapper;
 import com.example.mybatis_plus.mapper.UserMapper;
 
 @SpringBootTest
 public class MapperTest {
     @Resource
     private UserMapper userMapper;
+    @Resource
+    private ProductMapper productMapper;
 
     @Test
     void testInsert() {
@@ -61,5 +65,28 @@ public class MapperTest {
     void testSelectAllByName() {
         List<User> users = userMapper.selectAllByName("Jack");
         users.forEach(System.out::println);
+    }
+
+    @Test
+    void testConcurrentUpdate() {
+        Product p1 = productMapper.selectById(1L);
+        Product p2 = productMapper.selectById(1L);
+
+        p1.setPrice(p1.getPrice() + 50);
+        int result1 = productMapper.updateById(p1);
+        System.out.println("用戶 1 修改結果: " + (result1 == 1 ? "成功" : "失敗"));
+
+        p2.setPrice(p2.getPrice() - 30);
+        int result2 = productMapper.updateById(p2);
+        System.out.println("用戶 2 修改結果: " + (result2 == 1 ? "成功" : "失敗"));
+        if (result2 == 0) {
+            p2 = productMapper.selectById(1L);
+            p2.setPrice(p2.getPrice() - 30);
+            result2 = productMapper.updateById(p2);
+            System.out.println("用戶 2 修改重試結果: " + (result2 == 1 ? "成功" : "失敗"));
+        }
+
+        Product p3 = productMapper.selectById(1L);
+        System.out.println("最後價格: " + p3.getPrice());
     }
 }
