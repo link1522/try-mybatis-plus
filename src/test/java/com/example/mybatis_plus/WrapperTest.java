@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.example.mybatis_plus.entity.User;
 import com.example.mybatis_plus.mapper.UserMapper;
 
@@ -93,5 +94,25 @@ public class WrapperTest {
         queryWrapper.inSql("id", "select id from user where id < 3");
         List<Map<String, Object>> maps = userMapper.selectMaps(queryWrapper);
         maps.forEach(System.out::println);
+    }
+
+    /**
+     * 查詢名字中包含 n，且 (年齡小於 18 或 email 為空)，將這些資料的年齡改為 30，email 改為 test@example.com
+     * (與 test4 相同，但改成使用 UpdateWrapper)
+     */
+    @Test
+    void test7() {
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        updateWrapper
+                .set("age", 18)
+                .set("email", "test@example.com")
+                .like("name", "n")
+                .and(q -> q.lt("age", 18).or().isNull("email"));
+
+        User user = new User();
+        // update() 方法第一個參數如果傳入 null，依舊可以執行，但就只會更新 updateWrapper 設定的欄位，不會自動加入 User
+        // entity 上加入的自動填充欄位 (如: update_time, is_delete)
+        int result = userMapper.update(user, updateWrapper);
+        System.out.println("更新了 " + result + " 筆");
     }
 }
