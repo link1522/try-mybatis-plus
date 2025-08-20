@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.example.mybatis_plus.entity.User;
 import com.example.mybatis_plus.mapper.UserMapper;
 
@@ -114,5 +115,25 @@ public class WrapperTest {
         // entity 上加入的自動填充欄位 (如: update_time, is_delete)
         int result = userMapper.update(user, updateWrapper);
         System.out.println("更新了 " + result + " 筆");
+    }
+
+    /*
+     * 查詢名字包含 n，年齡大於 10 歲，小於 20 歲的用戶，查詢條件來自於用戶，是可選的
+     * (with condition)
+     */
+    @Test
+    void test8() {
+        String name = null;
+        Integer ageBegin = 10;
+        Integer ageEnd = 20;
+
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper
+                .like(StringUtils.isNotBlank(name), "name", name)
+                .ge(ageBegin != null, "age", ageBegin)
+                .le(ageEnd != null, "age", ageEnd);
+
+        List<User> users = userMapper.selectList(queryWrapper);
+        users.forEach(System.out::println);
     }
 }
