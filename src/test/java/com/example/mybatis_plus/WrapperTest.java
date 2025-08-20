@@ -8,9 +8,12 @@ import javax.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.example.mybatis_plus.entity.User;
 import com.example.mybatis_plus.mapper.UserMapper;
 
@@ -135,5 +138,43 @@ public class WrapperTest {
 
         List<User> users = userMapper.selectList(queryWrapper);
         users.forEach(System.out::println);
+    }
+
+    /*
+     * 查詢名字包含 n，年齡大於 10 歲，小於 20 歲的用戶，查詢條件來自於用戶，是可選的
+     * (use Lambda)
+     */
+    @Test
+    void test9() {
+        String name = null;
+        Integer ageBegin = 10;
+        Integer ageEnd = 20;
+
+        LambdaQueryWrapper<User> queryWrapper = Wrappers.lambdaQuery();
+        queryWrapper
+                .like(StringUtils.isNotBlank(name), User::getName, name)
+                .ge(ageBegin != null, User::getAge, ageBegin)
+                .le(ageEnd != null, User::getAge, ageEnd);
+
+        List<User> users = userMapper.selectList(queryWrapper);
+        users.forEach(System.out::println);
+    }
+
+    /**
+     * 查詢名字中包含 n，且 (年齡小於 18 或 email 為空)，將這些資料的年齡改為 30，email 改為 test@example.com
+     * (與 test7 相同，但改成使用 LambdaUpdateWrapper)
+     */
+    @Test
+    void test10() {
+        LambdaUpdateWrapper<User> updateWrapper = Wrappers.lambdaUpdate();
+        updateWrapper
+                .set(User::getAge, 18)
+                .set(User::getEmail, "test@example.com")
+                .like(User::getName, "n")
+                .and(q -> q.lt(User::getAge, 18).or().isNull(User::getEmail));
+
+        User user = new User();
+        int result = userMapper.update(user, updateWrapper);
+        System.out.println("更新了 " + result + " 筆");
     }
 }
